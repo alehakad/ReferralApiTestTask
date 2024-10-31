@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 from fastapi.params import Depends
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -24,24 +24,25 @@ class Token(BaseModel):
 
 
 @router.post("/register", response_model=Token)
-async def register(user: UserCreate, db: Annotated[AsyncSession, Depends(get_async_session)]):
-    result = await db.execute(select(User).where(User.email == user.email))
+async def register(user: UserCreate, session: Annotated[AsyncSession, Depends(get_async_session)]):
+    # check if user already exists
+    result = await session.execute(select(User).where(User.email == user.email))
     existing_user = result.scalars().first()
 
-    # check if user already exists
     if existing_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
 
     # create new user
     hashed_password = get_password_hash(user.password)
     new_user = User(email=user.email, hashed_password=hashed_password)
-    db.add(new_user)
-    await db.commit()
-    await db.refresh(new_user)
+    session.add(new_user)
+    await session.commit()
+    await session.refresh(new_user)
 
     # create token
     access_token = create_access_token(data={"sub": new_user.email})
-    return {"access_token": access_token, "token_type": "bearer"}
+    return Token(access_token=access_token, token_type="bearer")
+
 
 @router.post("/login", response_model=Token)
 async def login(user: UserCreate, db: Annotated[AsyncSession, Depends(get_async_session)]):
@@ -51,7 +52,7 @@ async def login(user: UserCreate, db: Annotated[AsyncSession, Depends(get_async_
 
     # check password
     if not db_user or not verify_password(user.password, db_user.hashed_password):
-        raise HTTPException(status_code=400, detail="Incorrect email or password")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Incorrect email or password")
 
     # create token
     access_token = create_access_token({"sub": db_user.email})

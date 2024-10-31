@@ -1,17 +1,27 @@
+import os
 from contextlib import asynccontextmanager
+from pathlib import Path
+import uvicorn
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
 
 from app.db import init_db
-from app.routers import auth
+from app.routers import auth, protected
 
-app = FastAPI()
-
-app.include_router(auth.router, prefix="/auth")
-
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
     yield
     # SessionLocal.remove()
+
+
+app = FastAPI(lifespan=lifespan)
+
+app.include_router(auth.router, prefix="/auth")
+app.include_router(protected.router, prefix="/user")
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

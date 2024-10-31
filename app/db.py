@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from app.models.user import Base
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://user:password@localhost:5432/referral_db")
+DATABASE_URL = "postgresql+asyncpg://alehak:aleha2001@localhost:5432/referral_db" #os.getenv("DATABASE_URL")
 
 engine = create_async_engine(DATABASE_URL, echo=True)
 async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
@@ -13,6 +13,7 @@ async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
 async def init_db():
     async with engine.begin() as conn:
+        print("Creating db tables")
         await conn.run_sync(Base.metadata.create_all)
 
 

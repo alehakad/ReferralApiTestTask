@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer, ForeignKey, String, DateTime, func
+from sqlalchemy import Column, Integer, ForeignKey, String, DateTime, func, UniqueConstraint
 from sqlalchemy.orm import relationship
-from app.models.user import Base
+from .base import Base
 
 
 class Referral(Base):
@@ -13,3 +13,5 @@ class Referral(Base):
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
     referrer = relationship("User", back_populates="referrals")
+
+    __table_args__ = (UniqueConstraint('referrer_id', 'code', name='unique_referral_per_user'),)
