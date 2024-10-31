@@ -12,7 +12,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     referrer_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
-    referrer = relationship("User", remote_side=[id], backref="referrals")
+    referrer = relationship("User", remote_side=[id], backref="user_referrals")
     referrals = relationship("Referral", back_populates="referrer", cascade="all, delete-orphan")
 
     def __repr__(self):

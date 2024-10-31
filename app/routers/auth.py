@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, status
 from fastapi.params import Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,13 +11,20 @@ from app.models import Referral
 from app.models.user import User
 from app.utils.jwt_utils import create_access_token, get_password_hash, verify_password
 
-router = APIRouter()
+router = APIRouter(tags=["auth"])
 
 
-class UserCreate(BaseModel):
-    email: str
+class UserBase(BaseModel):
+    email: EmailStr
     password: str
+
+
+class UserCreate(UserBase):
     referral_code: str | None = None
+
+
+class UserLogin(UserBase):
+    pass
 
 
 class Token(BaseModel):
@@ -54,7 +61,7 @@ async def register(user: UserCreate, session: Annotated[AsyncSession, Depends(ge
 
 
 @router.post("/login", response_model=Token)
-async def login(user: UserCreate, session: Annotated[AsyncSession, Depends(get_async_session)]):
+async def login(user: UserLogin, session: Annotated[AsyncSession, Depends(get_async_session)]):
     # get user from db
     result = await session.execute(select(User).where(User.email == user.email))
     db_user = result.scalars().first()

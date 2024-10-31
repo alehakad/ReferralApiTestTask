@@ -11,7 +11,7 @@ from app.dependencies import get_async_session, get_current_user
 from app.models import Referral
 from app.models.user import User
 
-router = APIRouter(dependencies=[Depends(get_current_user)])
+router = APIRouter(tags=["referrals"], dependencies=[Depends(get_current_user)])
 
 
 class ReferralCreate(BaseModel):
@@ -19,7 +19,7 @@ class ReferralCreate(BaseModel):
     expiration: datetime
 
 
-@router.post("/referral/create")
+@router.post("/create")
 async def create_referral(referral_data: ReferralCreate, user: Annotated[User, Depends(get_current_user)],
                           session: Annotated[AsyncSession, Depends(get_async_session)]):
     # check if user already created referral
@@ -41,7 +41,7 @@ async def create_referral(referral_data: ReferralCreate, user: Annotated[User, D
     return {"message": "Referral code created successfully", "referral": new_referral.code}
 
 
-@router.delete("/referral/delete")
+@router.delete("/delete")
 async def delete_referral(user: Annotated[User, Depends(get_current_user)],
                           session: Annotated[AsyncSession, Depends(get_async_session)]):
     # check for active referral code
@@ -63,7 +63,7 @@ async def delete_referral(user: Annotated[User, Depends(get_current_user)],
     return {"message": "Referral code deleted successfully"}
 
 
-@router.get("/referral/info/{referrer_id}")
+@router.get("/info/{referrer_id}")
 async def get_referrals_info(referrer_id: int, session: Annotated[AsyncSession, Depends(get_async_session)]):
     # get all user referrals
     result = await session.execute(select(Referral).where(Referral.referrer_id == referrer_id))
@@ -89,6 +89,6 @@ async def get_referral_code_by_email(email: str, session: Annotated[AsyncSession
     referral = result.scalars().first()
 
     if not referral:
-        raise HTTPException(status_code=404, detail="No active referral code found for this user")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No active referral code found for this user")
 
     return {"referral_code": referral.referral_code}
