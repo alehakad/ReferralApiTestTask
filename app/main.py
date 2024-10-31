@@ -15,11 +15,11 @@ from app.schemas.token import Token
 from app.utils.jwt_utils import create_access_token, verify_password
 
 
+# create db models on startup
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
     yield
-    # SessionLocal.remove()
 
 
 app = FastAPI(lifespan=lifespan)

@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from sqlalchemy import Column, Integer, Index, ForeignKey, String, DateTime, func, CheckConstraint, UniqueConstraint
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
@@ -26,7 +28,7 @@ class Referral(Base):
     # check if referral is active
     @hybrid_property
     def is_active(self):
-        return self.expiration_date > func.now()
+        return self.expiration_date > datetime.now(timezone.utc)
 
     @is_active.expression
     def is_active(cls):

@@ -25,7 +25,8 @@ async def create_referral(referral_data: ReferralCreate, user: Annotated[User, D
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only one referral code is allowed")
 
     # create new referral
-    new_referral = Referral(referrer_id=user.id, referral_code=referral_data.code, expiration_date=referral_data.expiration)
+    new_referral = Referral(referrer_id=user.id, referral_code=referral_data.code,
+                            expiration_date=referral_data.expiration)
 
     session.add(new_referral)
 
@@ -65,8 +66,15 @@ async def get_referrals_info(referrer_id: int, session: Annotated[AsyncSession, 
 
     if not referrals:
         return {"referrals": []}
-    referral_info = [{"id": referral.id, "referral_code": referral.referral_code, "is_active": referral.is_active,
-                      "created_at": referral.created_at} for referral in referrals]  # add users of referral
+    referral_info = [
+        {
+            "id": referral.id,
+            "referral_code": referral.referral_code,
+            "is_active": referral.is_active,
+            "created_at": referral.created_at
+        }  # add users
+        for referral in referrals
+    ]
 
     return referral_info
 
