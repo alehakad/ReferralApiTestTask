@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, ForeignKey, String, DateTime, func, UniqueConstraint
+from sqlalchemy import Column, Integer, ForeignKey, String, DateTime, func, CheckConstraint, UniqueConstraint
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 from .base import Base
 
@@ -14,4 +15,18 @@ class Referral(Base):
 
     referrer = relationship("User", back_populates="referrals")
 
-    __table_args__ = (UniqueConstraint('referrer_id', 'code', name='unique_referral_per_user'),)
+    # only one active code for user
+    __table_args__ = (
+        CheckConstraint('expiration_date > NOW()', name='check_expiration_date_future'),
+        UniqueConstraint('referrer_id', name='unique_active_referral_per_user',
+                         postgresql_where="expiration_date > NOW()")
+    )
+
+    # check if referral is active
+    @hybrid_property
+    def is_active(self):
+        return self.expiration_date > func.now()
+
+    @is_active.expression
+    def is_active(cls):
+        return cls.expiration_date > func.now()
