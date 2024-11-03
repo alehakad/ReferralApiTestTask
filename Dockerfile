@@ -18,5 +18,8 @@ COPY . .
 # Expose the application port
 EXPOSE 8000
 
+# Run alembic db migrations
+CMD ["alembic", "upgrade", "head"]
+
 # Command to run the application using uvicorn
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

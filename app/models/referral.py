@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, Integer, Index, ForeignKey, String, DateTime, func, CheckConstraint, UniqueConstraint
+from sqlalchemy import Column, Integer, Index, ForeignKey, String, DateTime, func, CheckConstraint, UniqueConstraint, \
+    text
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 from .base import Base
@@ -19,10 +20,7 @@ class Referral(Base):
 
     # only one active code for user
     __table_args__ = (
-        CheckConstraint('expiration_date > NOW()', name='check_expiration_date_future'),
-        Index('unique_active_referral_per_user', 'referrer_id',
-              unique=True,
-              postgresql_where="expiration_date > NOW()")
+        CheckConstraint("expiration_date > created_at", name="check_expiration_date_future"),
     )
 
     # check if referral is active
