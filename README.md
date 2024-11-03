@@ -16,17 +16,13 @@ This is a RESTful API service for managing a referral system. It enables user re
 project_root/
 ├── app/
 │   ├── main.py                # Application entry point
-│   ├── config.py              # Configuration settings (e.g., database URLs, JWT secrets)
-│   ├── dependencies.py        # Dependencies like JWT validation, caching connections
+│   ├── dependencies.py        # Dependencies: JWT validation: getting current user
 │   ├── schemas/               # Pydantic models for request/response validation
 │   ├── models/                # Database ORM models
-│   ├── crud/                  # CRUD operations for interacting with the database
-│   ├── services/              # Business logic
-│   ├── api/                   # API endpoint routes
-│   ├── utils/                 # Utility functions for JWT, date handling, etc.
+│   ├── routers/               # API endpoint routes
+│   ├── utils/                 # Utility functions for JWT
 │   └── db.py                  # Database connection and setup
 ├── tests/                     # Unit and integration tests
-├── docs/                      # Swagger/ReDoc documentation setup
 ├── .env                       # Environment variables (DB URL, JWT secret, etc.)
 ├── Dockerfile                 # Docker setup for containerization
 ├── docker-compose.yml         # Docker Compose for services (DB, Redis)
