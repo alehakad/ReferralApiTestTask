@@ -39,8 +39,17 @@ project_root/
    ```
 2. **Configure environment variables**:
     - create .env based on .env.example
+
 3. **Build and start the containers**:
     ```bash
     docker-compose up --build
     ```
+   or manually 
+   ```bash
+    pip install -r requirements.txt
+   uvicorn app.main:app --reload
+    ```
+   
 4. **Access the API** at ```bash http://localhost:8000```
+
+5. **To run tests** ```bash pytest``` in main project directory
