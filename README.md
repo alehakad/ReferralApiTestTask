@@ -45,9 +45,9 @@ project_root/
     docker-compose up --build
     ```
    or manually 
-   ```bash
+    ```bash
     pip install -r requirements.txt
-   uvicorn app.main:app --reload
+    uvicorn app.main:app --reload
     ```
    
 4. **Access the API** at ```bash http://localhost:8000```

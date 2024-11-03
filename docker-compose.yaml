@@ -1,14 +1,12 @@
-version: '3.8'
-
 services:
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql+asyncpg://<user>:<password>@db:5432/<dbname>
-      - JWT_SECRET_KEY=<your_jwt_secret_key>
-      - REDIS_URL=redis://redis:6379/0
+    env_file:
+      - .env
     depends_on:
       - db
     volumes:
@@ -16,12 +14,18 @@ services:
 
   db:
     image: postgres:latest
-    environment:
-      POSTGRES_USER: <user>
-      POSTGRES_PASSWORD: <password>
-      POSTGRES_DB: <dbname>
+    env_file:
+      - .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  migrations:
+    build: .
+    env_file:
+      - .env
+    command: alembic upgrade head
+    depends_on:
+      - db
 
 volumes:
   postgres_data:
