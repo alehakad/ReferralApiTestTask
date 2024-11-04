@@ -1,9 +1,9 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, Integer, Index, ForeignKey, String, DateTime, func, CheckConstraint, UniqueConstraint, \
-    text
+from sqlalchemy import CheckConstraint, Column, DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
+
 from .base import Base
 
 
@@ -17,8 +17,8 @@ class Referral(Base):
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
     referrer = relationship("User", back_populates="referrals")
+    users = relationship("User", secondary="user_referrals", back_populates="referral_used")
 
-    # only one active code for user
     __table_args__ = (
         CheckConstraint("expiration_date > created_at", name="check_expiration_date_future"),
     )
@@ -31,3 +31,10 @@ class Referral(Base):
     @is_active.expression
     def is_active(cls):
         return cls.expiration_date > func.now()
+
+
+class UserReferral(Base):
+    __tablename__ = 'user_referrals'
+
+    user_id = Column(Integer, ForeignKey('users.id'), primary_key=True)
+    referral_id = Column(Integer, ForeignKey('referrals.id'), primary_key=True)

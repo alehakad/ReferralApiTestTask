@@ -13,8 +13,8 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     referrer_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
-    referrer = relationship("User", remote_side=[id], backref="user_referrals")
     referrals = relationship("Referral", back_populates="referrer", cascade="all, delete-orphan")
+    referral_used = relationship("Referral", secondary="user_referrals", back_populates="users")
 
     def __repr__(self):
         return f"<User(id={self.id}, email='{self.email}', referrer_id={self.referrer_id})>"
