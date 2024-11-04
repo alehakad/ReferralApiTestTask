@@ -1,6 +1,6 @@
 # Referral System API
 
-This is a RESTful API service for managing a referral system. It enables user registration, authentication, referral code management, and tracking of referred users. Built with FastAPI, this project follows best practices for clean, asynchronous code, and offers Swagger UI documentation.
+This is a RESTful API service for managing a referral system. It enables user registration, authentication, referral code management, and tracking of referred users. Built with FastAPI and SQLAlchemy.
 
 ## Features
 
@@ -8,7 +8,6 @@ This is a RESTful API service for managing a referral system. It enables user re
 - **Referral Code Management**: create, retrieve, and delete referral codes with expiration settings
 - **Referral Tracking**: register users via referral code and track referrals by referrer
 - **API Documentation** with Swagger/ReDoc
-- **Optional Caching** with in-memory storage for referral codes
 
 ## Project Structure
 
@@ -22,12 +21,12 @@ project_root/
 │   ├── routers/               # API endpoint routes
 │   ├── utils/                 # Utility functions for JWT
 │   └── db.py                  # Database connection and setup
-├── tests/                     # Unit and integration tests
+├── tests/                     # Pytest examples
 ├── .env                       # Environment variables (DB URL, JWT secret, etc.)
-├── Dockerfile                 # Docker setup for containerization
-├── docker-compose.yml         # Docker Compose for services (DB, Redis)
+├── Dockerfile                 # Dockerfile of application
+├── docker-compose.yml         # Docker Compose with Postrgres and FastAPI containers
 ├── README.md                  # Project overview and setup instructions
-└── requirements.txt           # Python dependencies
+└── requirements.txt           # Python dependencies to install
 ```
 
 ## Setup Instructions
