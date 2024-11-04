@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, List
 
 from fastapi import APIRouter, HTTPException, status
 from fastapi.params import Depends
@@ -10,7 +10,7 @@ from sqlalchemy.orm import selectinload
 from app.db import get_async_session
 from app.dependencies import User, get_current_user
 from app.models import Referral
-from app.schemas.referral import ReferralCreate
+from app.schemas.referral import ReferralCreate, ReferralInfo
 
 router = APIRouter(tags=["referrals"])
 
@@ -74,7 +74,7 @@ async def delete_referral(
     return {"message": "Referral code deleted successfully"}
 
 
-@router.get("/info/{referrer_id}")
+@router.get("/info/{referrer_id}", response_model=List[ReferralInfo])
 async def get_referrals_info(
         referrer_id: int,
         session: Annotated[AsyncSession, Depends(get_async_session)]
@@ -88,7 +88,7 @@ async def get_referrals_info(
     referrals = result.scalars().all()
 
     if not referrals:
-        return {"referrals": []}
+        return []
 
     referral_info = []
     for referral in referrals:
